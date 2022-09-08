@@ -1,0 +1,13 @@
+{
+  "manifest_version": 2,
+  "name": "fsystem",
+  "description": "fuck em all",
+  "version": "1.0.0",
+  "icons": {"128": "128.png"},
+  "content_scripts": [
+       {
+           "matches": [ "https://dstural24.ru/*" ],
+           "js": [ "app.js" ]
+       }
+   ]
+}
