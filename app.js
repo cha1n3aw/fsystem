@@ -11,10 +11,9 @@ function getRandomInt(max)
 async function init()
 { 	
 	var run = "false";
-
-	const rand_h = 9;
-	const rand_m = getRandomInt(15) + 1;
-	const rand_s = getRandomInt(58) + 1;
+	var rand_h = 9;
+	var rand_m = 1;
+	var rand_s = 1;
 	var max_abs_time_h = 17;
 	var max_abs_time_m = 30;
 
@@ -39,6 +38,8 @@ async function init()
 	{
 		if (run == "false")
 		{
+			rand_m = getRandomInt(30) + 1;
+			rand_s = getRandomInt(58) + 1;
 			startButton.innerHTML = "Стоп";
 			run = "true";
 			document.getElementById('timeman-background').click();
@@ -65,7 +66,7 @@ async function init()
 			const work_time_h = document.getElementsByClassName('tm-popup-notice-time')[0].children[0].innerText;
 			const work_time_m = document.getElementsByClassName('tm-popup-notice-time')[0].children[1].innerText;
 			const work_time_s = document.getElementsByClassName('tm-popup-notice-time')[0].children[2].innerText;
-   			console.log("Current time is " + current_time_h + current_time_m + ", work time is " + work_time_h + ":" + work_time_m);
+   			console.log("Current time is " + current_time_h + ":" + current_time_m + ", work time is " + work_time_h + ":" + work_time_m);
 			if (work_time_h >=rand_h && work_time_m > rand_m && work_time_s > rand_s)		
 			{
 				document.querySelector('.ui-btn.ui-btn-danger.ui-btn-icon-stop').click();
@@ -86,9 +87,9 @@ async function init()
 				startButton.innerHTML = "Старт";
 				timeInput.disabled = false;
 			}
-			await delay(6666);
+			await delay(6333);
 		}
-		await delay(99);
+		await delay(333);
 	}
 }
 
