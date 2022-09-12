@@ -1,4 +1,4 @@
-var run = "false";
+﻿var run = "false";
 var rand_work_finish_h = 9;
 var rand_work_finish_m = 1;
 var rand_work_finish_s = 1;
@@ -9,15 +9,11 @@ var max_abs_finish_h = 17;
 var max_abs_finish_m = 30;
 var startButton = document.createElement("button");
 var timeInput = document.createElement("input");
+const weekday = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 
 function delay(milliseconds)
 {
     	return new Promise(resolve => {setTimeout(resolve, milliseconds);});
-}
-
-function getRandomInt(max)
-{
-  	return Math.floor(Math.random() * max);
 }
 
 async function handleClick()
@@ -47,8 +43,6 @@ async function handleClick()
 			{
 				awaiting_finish = "false";
 				awaiting_start = "true";
-				rand_abs_start_h = 7;
-				rand_abs_start_m = getRandomInt(5) + 54;
 				console.log("Script started, awaiting for work to start");
 				run = "true";
 			}
@@ -58,9 +52,7 @@ async function handleClick()
 				{
 					awaiting_finish = "true";
 					awaiting_start = "false";
-					rand_work_finish_h = 9;
-					rand_work_finish_m = getRandomInt(30) + 1;
-					rand_work_finish_s = getRandomInt(58) + 1;
+					randomize_work_finish_time();
 					console.log("Script started, awaiting for work to finish");
 					run = "true";
 				}
@@ -80,6 +72,26 @@ async function handleClick()
 		timeInput.disabled = false;
 		console.log("Script stopped");
 	}
+}
+
+function getRandomInt(max, offset)
+{
+  	return Math.floor(Math.random() * max) + offset;
+}
+
+function randomize_work_finish_time()
+{
+	
+	rand_work_finish_h = 9;
+	rand_work_finish_m = getRandomInt(10, 20);
+	rand_work_finish_s = getRandomInt(58, 1);
+}
+
+function randomize_abs_start_time()
+{
+	
+	rand_abs_start_h = 7;
+	rand_abs_start_m = getRandomInt(5, 54);
 }
 
 async function init()
@@ -122,81 +134,89 @@ async function init()
 						await delay(1666);
 					}
 					else
-					{
-						if (awaiting_finish == "true" && awaiting_start == "false")
+					{	
+						
+						const currentDayOfWeek = new Date().getDay();
+						const current_time_h = document.getElementsByClassName('time-hours')[0].innerText;
+						const current_time_m = document.getElementsByClassName('time-minutes')[0].innerText;
+						if (currentDayOfWeek != 0 && currentDayOfWeek != 6)
 						{
-							const current_time_h = document.getElementsByClassName('time-hours')[0].innerText;
-							const current_time_m = document.getElementsByClassName('time-minutes')[0].innerText;
-							const work_time_h = document.getElementsByClassName('tm-popup-notice-time')[0].children[0].innerText;
-							const work_time_m = document.getElementsByClassName('tm-popup-notice-time')[0].children[1].innerText;
-							const work_time_s = document.getElementsByClassName('tm-popup-notice-time')[0].children[2].innerText;
-   							console.log("Current time is " + current_time_h + ":" + current_time_m + ", cut-off time is " + max_abs_finish_h + ":" + max_abs_finish_m);
-							console.log("Current work time is " + work_time_h + ":" + work_time_m + ", target work time is " + rand_work_finish_h + ":" + rand_work_finish_m);
-							var reportText = document.getElementsByClassName('tm-popup-report-textarea')[0].value;
-							if (work_time_h >=rand_work_finish_h && work_time_m > rand_work_finish_m && work_time_s > rand_work_finish_s)		
+							if (awaiting_finish == "true" && awaiting_start == "false")
 							{
-								if (reportText.length > 30)
+								const work_time_h = document.getElementsByClassName('tm-popup-notice-time')[0].children[0].innerText;
+								const work_time_m = document.getElementsByClassName('tm-popup-notice-time')[0].children[1].innerText;
+								const work_time_s = document.getElementsByClassName('tm-popup-notice-time')[0].children[2].innerText;
+   								console.log("It's " + weekday[currentDayOfWeek] + ", " + current_time_h + ":" + current_time_m + ", cut-off time is " + max_abs_finish_h + ":" + max_abs_finish_m);
+								console.log("Already working for " + work_time_h + ":" + work_time_m + ", target work time is " + rand_work_finish_h + ":" + rand_work_finish_m);
+								var reportText = document.getElementsByClassName('tm-popup-report-textarea')[0].value;
+								if (work_time_h >=rand_work_finish_h && work_time_m > rand_work_finish_m && work_time_s > rand_work_finish_s)		
 								{
-									document.querySelector('.ui-btn.ui-btn-danger.ui-btn-icon-stop').click();
-									await delay(999);
-									document.querySelector('.popup-window-button.popup-window-button-decline').click();
-									await delay(999);
-									startButton.innerHTML = "Старт";
-									startButton.setAttribute("style", "margin: 0 0 0 24px; border-radius: 40px; width: auto; height: auto; padding: 4px 10px; border: none; color: white; background-color: rgba(255,255,255,0.4); font-size: 15px;");
-									timeInput.disabled = false;
-									awaiting_finish = "false";
-									awaiting_start = "true";
-									rand_abs_start_h = 7;
-									rand_abs_start_m = getRandomInt(5) + 54;
+									if (reportText.length > 30)
+									{
+										document.querySelector('.ui-btn.ui-btn-danger.ui-btn-icon-stop').click();
+										await delay(999);
+										document.querySelector('.popup-window-button.popup-window-button-decline').click();
+											await delay(999);
+										startButton.innerHTML = "Старт";
+										startButton.setAttribute("style", "margin: 0 0 0 24px; border-radius: 40px; width: auto; height: auto; padding: 4px 10px; border: none; color: white; background-color: rgba(255,255,255,0.4); font-size: 15px;");
+										timeInput.disabled = false;
+										awaiting_finish = "false";
+										awaiting_start = "true";
+										randomize_abs_start_time();
+									}
+									else
+									{
+										console.log("ALERT: EMPTY REPORT!");
+										startButton.setAttribute("style", "margin: 0 0 0 24px; border-radius: 40px; width: auto; height: auto; padding: 4px 10px; border: none; color: white; background-color: rgba(255,0,0,0.4); font-size: 15px;");
+										startButton.innerHTML = "Отчёт!";
+									}
 								}
-								else
+								else if (max_abs_finish_h <= current_time_h && max_abs_finish_m <= current_time_m)
 								{
-									console.log("ALERT: EMPTY REPORT!");
-									startButton.setAttribute("style", "margin: 0 0 0 24px; border-radius: 40px; width: auto; height: auto; padding: 4px 10px; border: none; color: white; background-color: rgba(255,0,0,0.4); font-size: 15px;");
-									startButton.innerHTML = "Отчёт!";
+									if (reportText.length > 30)
+									{
+										document.querySelector('.ui-btn.ui-btn-danger.ui-btn-icon-stop').click();
+										await delay(999);
+										document.querySelector('.popup-window-button.popup-window-button-decline').click();
+										await delay(999);
+										startButton.innerHTML = "Старт";
+										startButton.setAttribute("style", "margin: 0 0 0 24px; border-radius: 40px; width: auto; height: auto; padding: 4px 10px; border: none; color: white; background-color: rgba(255,255,255,0.4); font-size: 15px;");
+										timeInput.disabled = false;
+										awaiting_finish = "false";
+										awaiting_start = "true";
+										randomize_abs_start_time();
+									}
+									else
+									{
+										console.log("ALERT: EMPTY REPORT!");
+										startButton.setAttribute("style", "margin: 0 0 0 24px; border-radius: 40px; width: auto; height: auto; padding: 4px 10px; border: none; color: white; background-color: rgba(255,0,0,0.4); font-size: 15px;");
+										startButton.innerHTML = "Отчёт!";
+									}
 								}
+								await delay(16666);
 							}
-							else if (max_abs_finish_h <= current_time_h && max_abs_finish_m <= current_time_m)
+							else if (awaiting_start == "true" && awaiting_finish == "false")
 							{
-								if (reportText.length > 30)
+								
+								const current_time_h = document.getElementsByClassName('time-hours')[0].innerText;
+								const current_time_m = document.getElementsByClassName('time-minutes')[0].innerText;
+								console.log("It's " + weekday[currentDayOfWeek] + ", " + current_time_h + ":" + current_time_m + ", work start is scheduled to " + rand_abs_start_h + ":" + rand_abs_start_m);
+								if (current_time_h >= rand_abs_start_h && current_time_m >= rand_abs_start_m)
 								{
-									document.querySelector('.ui-btn.ui-btn-danger.ui-btn-icon-stop').click();
+									document.querySelector('.ui-btn.ui-btn-success.ui-btn-icon-start').click();
 									await delay(999);
-									document.querySelector('.popup-window-button.popup-window-button-decline').click();
-									await delay(999);
-									startButton.innerHTML = "Старт";
-									startButton.setAttribute("style", "margin: 0 0 0 24px; border-radius: 40px; width: auto; height: auto; padding: 4px 10px; border: none; color: white; background-color: rgba(255,255,255,0.4); font-size: 15px;");
-									timeInput.disabled = false;
-									awaiting_finish = "false";
-									awaiting_start = "true";
-									rand_abs_start_h = 7;
-									rand_abs_start_m = getRandomInt(5) + 54;
+									awaiting_finish = "true";
+									awaiting_start = "false";
+									randomize_work_finish_time();
 								}
-								else
-								{
-									console.log("ALERT: EMPTY REPORT!");
-									startButton.setAttribute("style", "margin: 0 0 0 24px; border-radius: 40px; width: auto; height: auto; padding: 4px 10px; border: none; color: white; background-color: rgba(255,0,0,0.4); font-size: 15px;");
-									startButton.innerHTML = "Отчёт!";
-								}
+								await delay(16666);
 							}
-							await delay(16666);
+							
 						}
-						else if (awaiting_start == "true" && awaiting_finish == "false")
+						else
 						{
-							const current_time_h = document.getElementsByClassName('time-hours')[0].innerText;
-							const current_time_m = document.getElementsByClassName('time-minutes')[0].innerText;
-							console.log("Current time is " + current_time_h + ":" + current_time_m + ", absolute start time is " + rand_abs_start_h + ":" + rand_abs_start_m);
-							if (current_time_h >= rand_abs_start_h && current_time_m >= rand_abs_start_m)
-							{
-								document.querySelector('.ui-btn.ui-btn-success.ui-btn-icon-start').click();
-								await delay(999);
-								awaiting_finish = "true";
-								awaiting_start = "false";
-								rand_work_finish_m = 9;
-								rand_work_finish_m = getRandomInt(30) + 1;
-								rand_work_finish_s = getRandomInt(58) + 1;
-							}
-							await delay(16666);
+							console.log("It's " + weekday[currentDayOfWeek] + ", " + current_time_h + ":" + current_time_m + ", sleeping for 4 hours because of weekend...");
+							await delay(14400000);
 						}
 					}
 				}
