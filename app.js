@@ -10,7 +10,7 @@ const weekday = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Sa
 
 function delay(milliseconds)
 {
-    	return new Promise(resolve => {setTimeout(resolve, milliseconds);});
+	return new Promise(resolve => {setTimeout(resolve, milliseconds);});
 }
 
 async function handleClick()
